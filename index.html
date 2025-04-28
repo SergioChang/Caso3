@@ -3,75 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Predicción de dibujos feos</title>
+    <title>Predicción de Dibujos Feos</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <!-- Librería Fabric.js -->
+    <script src="fabric.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        header img {
+            max-width: 200px;
+        }
+        canvas {
+            border: 1px solid #000;
+            margin-bottom: 20px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            font-size: 16px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h1>Predicción de dibujos feos</h1>
-    <div>
-        <canvas id="drawingCanvas" width="400" height="400" style="border:1px solid #000000;"></canvas>
-    </div>
+    <header>
+        <img src="LogotipoV2-Simple.png" alt="Logotipo del Proyecto">
+    </header>
+
+    <h1>Predicción de Dibujos Feos</h1>
+
+    <canvas id="drawingCanvas" width="400" height="400"></canvas>
     <button id="clearButton">Limpiar</button>
     <button id="predictButton">Predecir</button>
     <p id="result">Resultado: </p>
 
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="drawing.js"></script>
     <script>
-        const canvas = document.getElementById("drawingCanvas");
-        const ctx = canvas.getContext("2d");
+        // Inicialización básica de Fabric.js para el canvas
+        const canvas = new fabric.Canvas('drawingCanvas');
         const clearButton = document.getElementById("clearButton");
         const predictButton = document.getElementById("predictButton");
         const result = document.getElementById("result");
 
-        // Variables para el dibujo
-        let isDrawing = false;
-
-        // Configurar el canvas para dibujar
-        canvas.addEventListener("mousedown", () => (isDrawing = true));
-        canvas.addEventListener("mouseup", () => (isDrawing = false));
-        canvas.addEventListener("mousemove", (event) => {
-            if (isDrawing) {
-                const rect = canvas.getBoundingClientRect();
-                const x = event.clientX - rect.left;
-                const y = event.clientY - rect.top;
-
-                ctx.fillStyle = "black";
-                ctx.fillRect(x, y, 5, 5);
-            }
-        });
-
-        // Limpiar el canvas
+        // Configuración de eventos para limpiar el canvas
         clearButton.addEventListener("click", () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.clear();
         });
 
-        // Cargar el modelo y hacer predicciones
-        let model;
-        async function loadModel() {
-            model = await tf.loadGraphModel("path/to/model.json"); // Cambia esta ruta
-            console.log("Modelo cargado");
-        }
-        loadModel();
-
+        // Ejemplo de integración del modelo (puedes personalizarlo en drawing.js)
         predictButton.addEventListener("click", async () => {
-            if (!model) {
-                alert("El modelo aún no está cargado.");
-                return;
+            result.textContent = "Calculando...";
+            try {
+                const prediction = await getPrediction(canvas); // Implementa esta función en drawing.js
+                result.textContent = `Resultado: ${prediction}`;
+            } catch (error) {
+                result.textContent = "Error al realizar la predicción.";
+                console.error(error);
             }
-
-            // Preprocesar el dibujo para que coincida con la entrada del modelo
-            const tensor = tf.browser
-                .fromPixels(canvas)
-                .resizeNearestNeighbor([28, 28]) // Ajusta al tamaño esperado del modelo
-                .mean(2)
-                .toFloat()
-                .expandDims(0)
-                .expandDims(-1)
-                .div(255.0);
-
-            // Realizar predicción
-            const prediction = await model.predict(tensor).data();
-            const predictedClass = prediction.indexOf(Math.max(...prediction));
-            result.textContent = `Resultado: Clase ${predictedClass}`;
         });
     </script>
 </body>
