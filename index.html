@@ -3,73 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Predicción de Dibujos Feos</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="shortcut icon" href="favicon.ico">
-    <!-- Librería Fabric.js -->
-    <script src="fabric.min.js"></script>
+    <title>Dibujo en Canvas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 20px;
         }
-        header img {
-            max-width: 200px;
-        }
         canvas {
             border: 1px solid #000;
-            margin-bottom: 20px;
+            display: block;
+            margin: 0 auto;
         }
         button {
-            margin: 5px;
-            padding: 10px 15px;
+            margin: 10px;
+            padding: 10px;
             font-size: 16px;
-        }
-        #result {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <header>
-        <img src="LogotipoV2-Simple.png" alt="Logotipo del Proyecto">
-    </header>
-
-    <h1>Predicción de Dibujos Feos</h1>
-
-    <canvas id="drawingCanvas" width="400" height="400"></canvas>
+    <h1>¡Dibuja en el lienzo!</h1>
+    <canvas id="drawingCanvas" width="500" height="500"></canvas>
     <button id="clearButton">Limpiar</button>
-    <button id="predictButton">Predecir</button>
-    <p id="result">Resultado: </p>
 
-    <script src="drawing.js"></script>
     <script>
-        // Inicialización básica de Fabric.js para el canvas
+        // Crear un canvas de Fabric.js
         const canvas = new fabric.Canvas('drawingCanvas');
-        const clearButton = document.getElementById("clearButton");
-        const predictButton = document.getElementById("predictButton");
-        const result = document.getElementById("result");
 
-        // Configuración de eventos para limpiar el canvas
-        clearButton.addEventListener("click", () => {
+        // Permitir el dibujo en el lienzo
+        canvas.isDrawingMode = true;
+        canvas.freeDrawingBrush.color = 'black'; // Color del trazo
+        canvas.freeDrawingBrush.width = 5;      // Grosor del trazo
+
+        // Botón para limpiar el lienzo
+        const clearButton = document.getElementById('clearButton');
+        clearButton.addEventListener('click', () => {
             canvas.clear();
-        });
-
-        // Ejemplo de integración del modelo (puedes personalizarlo en drawing.js)
-        predictButton.addEventListener("click", async () => {
-            result.textContent = "Calculando...";
-            try {
-                const prediction = await getPrediction(canvas); // Implementa esta función en drawing.js
-                result.textContent = `Resultado: ${prediction}`;
-            } catch (error) {
-                result.textContent = "Error al realizar la predicción.";
-                console.error(error);
-            }
         });
     </script>
 </body>
